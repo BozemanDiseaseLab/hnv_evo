@@ -115,6 +115,8 @@ df <- df %>%
 
 df$`unlist(host)` %>% unique()
 
+save(df, file ='data/df.Rdata')
+
 hnv.seq <- as.data.frame(unlist(hnv.seq))
 hnv.seq <- hnv.seq %>% filter(ID %in% df$ID)
 
