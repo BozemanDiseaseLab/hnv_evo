@@ -5,8 +5,6 @@ library(BiocManager)
 library(annotate)
 library(tidyverse)
 #first searching for basic F genes in henipaviruses
-
-
 # niv_f.ft <- lapply(acc.list, entrez_fetch, db = 'nuccore', rettype='FASTA')
 # niv_f.ft.meta.data <- lapply(acc.list, entrez_summary, db = 'nuccore', rettype='FASTA')
 # locations <- lapply(niv_f.ft.meta.data, `[`, 19)
@@ -15,15 +13,9 @@ henipa.search <- entrez_search('nuccore', term = "\"Henipavirus\"[Organism]", re
 hnv.seq <- lapply(henipa.search$ids, entrez_fetch, db = 'nuccore', rettype='FASTA')
 hnv.seq.meta.data <- lapply(henipa.search$ids, entrez_summary, db = 'nuccore', rettype='FASTA')
 
-lapply(henipa.search$ids[[1]], entrez_summary, db = 'pubmed')
-
-x <- entrez_link(dbfrom = 'nuccore', id = henipa.search$ids[[1]], db = 'all', cmd = 'neighbor')
-linkout_urls(x)
-
-lapply(henipa.search$ids[[1]], entrez_summary, db = 'nuccore_pubmed')
-
-
-
+#lapply(henipa.search$ids[[1]], entrez_summary, db = 'pubmed')
+#x <- entrez_link(dbfrom = 'nuccore', id = henipa.search$ids[[1]], db = 'all', cmd = 'neighbor')
+#linkout_urls(x)
 
 locations <- lapply(hnv.seq.meta.data, `[`, 19)
 title <- t(as.data.frame(lapply(hnv.seq.meta.data, `[`, 3)))
@@ -93,13 +85,13 @@ isolation_source <- as.data.frame(unlist(isolation_source))
 collection_date <- as.data.frame(unlist(collection_date))
 title <- as.data.frame(unlist(title))
 
+sum(is.na(country))/length(locations) *  100
+
 df <- cbind(country, host, isolate,isolation_source, collection_date, title )
 rm(country, host, isolate,isolation_source, collection_date, title, locations )
 
-sum(is.na(country))/length(locations) *  100
-
 df$ID <- seq.int(nrow(df))
-hnv.seq$ID <- seq.int(nrow(hnv.seq))
+#hnv.seq$ID <- seq.int(nrow(hnv.seq))
 
 unique(df$`unlist(host)`)
 unique(df$`unlist(country)`)
@@ -117,13 +109,19 @@ df$`unlist(host)` %>% unique()
 
 save(df, file ='data/df.Rdata')
 
-hnv.seq <- as.data.frame(unlist(hnv.seq))
-hnv.seq <- hnv.seq %>% filter(ID %in% df$ID)
+hnv.seq.1 <- as.data.frame(unlist(hnv.seq))
+hnv.seq.1$ID <- seq.int(nrow(hnv.seq.1))
+hnv.seq.2 <- hnv.seq.1 %>% filter(ID %in% df$ID)
+hnv.seq.3 <- tidyr::separate(hnv.seq.2, col = `unlist(hnv.seq)`, into = c('dat', 'seq'), sep = 'cds|genome|sequence')
 
-hnv.seq.1 <- tidyr::separate(hnv.seq, col = `unlist(hnv.seq)`, into = c('dat', 'seq'), sep = 'cds')
+hnv.seq.3$acc <- gsub(">", "", stringi::stri_extract_first(str=hnv.seq.3$dat, regex = ">[A-Z]{2}.{1}[0-9]{2,}"))
+gsub(">[A-Z]{2}.{1}[0-9]{2,}.1 ", "", hnv.seq.3$dat)
+hnv.seq.3$virus <- stringi::stri_extract_first(str=hnv.seq.3$dat, regex = "Hendra|Nipah|Cedar|[P|p]aramyxovirus")
+hnv.seq.3$gene <- stringi::stri_extract_first(str=hnv.seq.3$dat, regex = "\\([A-Z]{1}\\)|complete")
 
+hnv.seq.3 %>% filter(is.na(gene)) %>% dplyr::select(dat)
 
-
+save(hnv.seq.3, file ='data/seq_data.Rdata')
 
 
 
