@@ -11,7 +11,7 @@ library(tidyverse)
 
 henipa.search <- entrez_search('nuccore', term = "\"Henipavirus\"[Organism]", retmax = 1000 )
 hnv.seq <- lapply(henipa.search$ids, entrez_fetch, db = 'nuccore', rettype='FASTA')
-hnv.seq.meta.data <- lapply(henipa.search$ids, entrez_summary, db = 'nuccore', rettype='FASTA')
+henipa.search.meta.data <- lapply(henipa.search$ids, entrez_summary, db = 'nuccore', rettype='FASTA')
 
 #lapply(henipa.search$ids[[1]], entrez_summary, db = 'pubmed')
 #x <- entrez_link(dbfrom = 'nuccore', id = henipa.search$ids[[1]], db = 'all', cmd = 'neighbor')
@@ -87,42 +87,56 @@ title <- as.data.frame(unlist(title))
 
 sum(is.na(country))/length(locations) *  100
 
-df <- cbind(country, host, isolate,isolation_source, collection_date, title )
+entrez_summary <- cbind(country, host, isolate,isolation_source, collection_date, title )
 rm(country, host, isolate,isolation_source, collection_date, title, locations )
 
-df$ID <- seq.int(nrow(df))
+entrez_summary$ID <- seq.int(nrow(entrez_summary))
 #hnv.seq$ID <- seq.int(nrow(hnv.seq))
 
-unique(df$`unlist(host)`)
-unique(df$`unlist(country)`)
-unique(df$`unlist(isolation_source)`)
+unique(entrez_summary$`unlist(host)`)
+unique(entrez_summary$`unlist(country)`)
+unique(entrez_summary$`unlist(isolation_source)`)
 
-df <- df %>%
+entrez_summary <- entrez_summary %>%
   filter(!is.na(`unlist(country)` ))
 
 hosts <- c("Pteropus sp.", "Eidolon helvum", "bat", "Pteropus lylei", "Pteropus poliocephalus","Pteropus hypomelanus", "Eonycteris spelaea","Pteropus vampyrus", "Pteropus giganteus (bat)" )
 
-df <- df %>%
+entrez_summary <- entrez_summary %>%
   filter(`unlist(host)` %in% hosts)
 
-df$`unlist(host)` %>% unique()
+entrez_summary$`unlist(host)` %>% unique()
 
-save(df, file ='data/df.Rdata')
+entrez_summary <- entrez_summary %>%
+  dplyr::rename(country = `unlist(country)`, host = `unlist(host)`, isolate = `unlist(isolate)`, isolation_source = `unlist(isolation_source)`, collection_date = `unlist(collection_date)`, dat2 = V1)
+
+save(entrez_summary, file ='data/entrez_summary.Rdata')
 
 hnv.seq.1 <- as.data.frame(unlist(hnv.seq))
 hnv.seq.1$ID <- seq.int(nrow(hnv.seq.1))
-hnv.seq.2 <- hnv.seq.1 %>% filter(ID %in% df$ID)
+hnv.seq.2 <- hnv.seq.1 %>% filter(ID %in% entrez_summary$ID)
 hnv.seq.3 <- tidyr::separate(hnv.seq.2, col = `unlist(hnv.seq)`, into = c('dat', 'seq'), sep = 'cds|genome|sequence')
 
 hnv.seq.3$acc <- gsub(">", "", stringi::stri_extract_first(str=hnv.seq.3$dat, regex = ">[A-Z]{2}.{1}[0-9]{2,}"))
 gsub(">[A-Z]{2}.{1}[0-9]{2,}.1 ", "", hnv.seq.3$dat)
 hnv.seq.3$virus <- stringi::stri_extract_first(str=hnv.seq.3$dat, regex = "Hendra|Nipah|Cedar|[P|p]aramyxovirus")
 hnv.seq.3$gene <- stringi::stri_extract_first(str=hnv.seq.3$dat, regex = "\\([A-Z]{1}\\)|complete")
+hnv.seq.3$seq <- gsub("\\\n", "", hnv.seq.3$seq)
+
 
 hnv.seq.3 %>% filter(is.na(gene)) %>% dplyr::select(dat)
 
 save(hnv.seq.3, file ='data/seq_data.Rdata')
 
+df <- full_join(entrez_summary, hnv.seq.3)
+
+#rm(list=setdiff(ls(), "df"))
+
+save(df, file ='data/df')
+save(entrez_summary, file ='data/entrez_summary')
+save(henipa.search, file ='data/henipa.search')
+
+save(df, file ='data/df')
 
 
 
