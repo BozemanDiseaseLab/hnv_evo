@@ -17,8 +17,8 @@ henipa.search.meta.data <- lapply(henipa.search$ids, entrez_summary, db = 'nucco
 #x <- entrez_link(dbfrom = 'nuccore', id = henipa.search$ids[[1]], db = 'all', cmd = 'neighbor')
 #linkout_urls(x)
 
-locations <- lapply(hnv.seq.meta.data, `[`, 19)
-title <- t(as.data.frame(lapply(hnv.seq.meta.data, `[`, 3)))
+locations <- lapply(henipa.search.meta.data, `[`, 19)
+title <- t(as.data.frame(lapply(henipa.search.meta.data, `[`, 3)))
 country <- list()
 isolate <- list()
 host <- list()
@@ -27,50 +27,50 @@ collection_date <- list()
 
 for (i in 1:length(locations))
 {
-  if ('country' %in% unlist(strsplit(x <- hnv.seq.meta.data[[i]][18]$subtype, split = '\\|')))
+  if ('country' %in% unlist(strsplit(x <- henipa.search.meta.data[[i]][18]$subtype, split = '\\|')))
   {
-  index <- which(unlist(strsplit(x <- hnv.seq.meta.data[[i]][18]$subtype, split = '\\|')) == 'country')
-  country[i] <- unlist(strsplit(x <- hnv.seq.meta.data[[i]][19]$subname, split = '\\|'))[index]
+  index <- which(unlist(strsplit(x <- henipa.search.meta.data[[i]][18]$subtype, split = '\\|')) == 'country')
+  country[i] <- unlist(strsplit(x <- henipa.search.meta.data[[i]][19]$subname, split = '\\|'))[index]
   }
   else
   {
     country[i] <- NA 
   }
   
-  if ('isolate' %in% unlist(strsplit(x <- hnv.seq.meta.data[[i]][18]$subtype, split = '\\|')))
+  if ('isolate' %in% unlist(strsplit(x <- henipa.search.meta.data[[i]][18]$subtype, split = '\\|')))
   {
-    index <- which(unlist(strsplit(x <- hnv.seq.meta.data[[i]][18]$subtype, split = '\\|')) == 'isolate')
-    isolate[i] <- unlist(strsplit(x <- hnv.seq.meta.data[[i]][19]$subname, split = '\\|'))[index]
+    index <- which(unlist(strsplit(x <- henipa.search.meta.data[[i]][18]$subtype, split = '\\|')) == 'isolate')
+    isolate[i] <- unlist(strsplit(x <- henipa.search.meta.data[[i]][19]$subname, split = '\\|'))[index]
   }
   else
   {
     isolate[i] <- NA 
   }
   
-  if ('host' %in% unlist(strsplit(x <- hnv.seq.meta.data[[i]][18]$subtype, split = '\\|')))
+  if ('host' %in% unlist(strsplit(x <- henipa.search.meta.data[[i]][18]$subtype, split = '\\|')))
   {
-    index <- which(unlist(strsplit(x <- hnv.seq.meta.data[[i]][18]$subtype, split = '\\|')) == 'host')
-    host[i] <- unlist(strsplit(x <- hnv.seq.meta.data[[i]][19]$subname, split = '\\|'))[index]
+    index <- which(unlist(strsplit(x <- henipa.search.meta.data[[i]][18]$subtype, split = '\\|')) == 'host')
+    host[i] <- unlist(strsplit(x <- henipa.search.meta.data[[i]][19]$subname, split = '\\|'))[index]
   }
   else
   {
     host[i] <- NA 
   }
   
-  if ('isolation_source' %in% unlist(strsplit(x <- hnv.seq.meta.data[[i]][18]$subtype, split = '\\|')))
+  if ('isolation_source' %in% unlist(strsplit(x <- henipa.search.meta.data[[i]][18]$subtype, split = '\\|')))
   {
-    index <- which(unlist(strsplit(x <- hnv.seq.meta.data[[i]][18]$subtype, split = '\\|')) == 'isolation_source')
-    isolation_source[i] <- unlist(strsplit(x <- hnv.seq.meta.data[[i]][19]$subname, split = '\\|'))[index]
+    index <- which(unlist(strsplit(x <- henipa.search.meta.data[[i]][18]$subtype, split = '\\|')) == 'isolation_source')
+    isolation_source[i] <- unlist(strsplit(x <- henipa.search.meta.data[[i]][19]$subname, split = '\\|'))[index]
   }
   else
   {
     isolation_source[i] <- NA 
   }
   
-  if ('collection_date' %in% unlist(strsplit(x <- hnv.seq.meta.data[[i]][18]$subtype, split = '\\|')))
+  if ('collection_date' %in% unlist(strsplit(x <- henipa.search.meta.data[[i]][18]$subtype, split = '\\|')))
   {
-    index <- which(unlist(strsplit(x <- hnv.seq.meta.data[[i]][18]$subtype, split = '\\|')) == 'collection_date')
-    collection_date[i] <- unlist(strsplit(x <- hnv.seq.meta.data[[i]][19]$subname, split = '\\|'))[index]
+    index <- which(unlist(strsplit(x <- henipa.search.meta.data[[i]][18]$subtype, split = '\\|')) == 'collection_date')
+    collection_date[i] <- unlist(strsplit(x <- henipa.search.meta.data[[i]][19]$subname, split = '\\|'))[index]
   }
   else
   {
@@ -100,10 +100,10 @@ unique(entrez_summary$`unlist(isolation_source)`)
 entrez_summary <- entrez_summary %>%
   filter(!is.na(`unlist(country)` ))
 
-hosts <- c("Pteropus sp.", "Eidolon helvum", "bat", "Pteropus lylei", "Pteropus poliocephalus","Pteropus hypomelanus", "Eonycteris spelaea","Pteropus vampyrus", "Pteropus giganteus (bat)" )
+#hosts <- c("Pteropus sp.", "Eidolon helvum", "bat", "Pteropus lylei", "Pteropus poliocephalus","Pteropus hypomelanus", "Eonycteris spelaea","Pteropus vampyrus", "Pteropus giganteus (bat)" )
 
-entrez_summary <- entrez_summary %>%
-  filter(`unlist(host)` %in% hosts)
+#entrez_summary <- entrez_summary %>%
+#  filter(`unlist(host)` %in% hosts)
 
 entrez_summary$`unlist(host)` %>% unique()
 
@@ -122,7 +122,6 @@ gsub(">[A-Z]{2}.{1}[0-9]{2,}.1 ", "", hnv.seq.3$dat)
 hnv.seq.3$virus <- stringi::stri_extract_first(str=hnv.seq.3$dat, regex = "Hendra|Nipah|Cedar|[P|p]aramyxovirus")
 hnv.seq.3$gene <- stringi::stri_extract_first(str=hnv.seq.3$dat, regex = "\\([A-Z]{1}\\)|complete")
 hnv.seq.3$seq <- gsub("\\\n", "", hnv.seq.3$seq)
-
 
 hnv.seq.3 %>% filter(is.na(gene)) %>% dplyr::select(dat)
 

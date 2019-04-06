@@ -1,4 +1,5 @@
 #hnv_data analyze
+#first run "hnv_search_clean" and "Hnv_search_locations" 
 
 #packages:
 
@@ -26,7 +27,7 @@ df <- df %>%
   
 #df.seq <- df[1:15,]
 seq <- Biostrings::DNAStringSet(df[,9], use.names = TRUE)
-seq@ranges@NAMES <- as.character(df$virus)
+seq@ranges@NAMES <- as.character(paste(df$virus, df$ID))
 
 #rm(NucCapsidAlignment)
 NucCapsidAlignment <- msa::msa(seq, "Muscle")
@@ -69,7 +70,26 @@ library(seqinr)
 d <- dist.alignment(NucCapsidAlignment2, "identity")
 hist(d)
 #as.matrix(d)[2:5, "NucCapsidAlignment2", drop=FALSE] #dont kow why this doesn't work
-
+heatmap(d)
 library(ape)
 hemoTree <- njs(d)
 plot(hemoTree,type ='fan', main="Nipah and Hendra")
+
+m=as.matrix(d)
+library(lattice) 
+levelplot(m[1:ncol(m),ncol(m):1])
+
+#a couple indices look really really bad
+
+#the level plot makes me want to remove the following indices, or at least check them out
+
+#193, 109, 111,112,105,113,,110,114,115,108,106,107,
+
+#df.seq <- df[1:15,]
+rm <- df[df$ID %in% c(193, 109, 111,112,105,113,110,114,115,108,106,107),]
+
+#i dont see any reason to remove these yet?
+
+
+
+
