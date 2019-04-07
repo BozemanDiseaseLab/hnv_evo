@@ -126,16 +126,11 @@ hnv.seq.3$seq <- gsub("\\\n", "", hnv.seq.3$seq)
 hnv.seq.3 %>% filter(is.na(gene)) %>% dplyr::select(dat)
 
 save(hnv.seq.3, file ='data/seq_data.Rdata')
-
 df <- full_join(entrez_summary, hnv.seq.3)
+save(df, file ='data/df.Rdata')
+save(entrez_summary, file ='data/entrez_summary.Rdata')
+save(henipa.search, file ='data/henipa.search.Rdata')
 
-#rm(list=setdiff(ls(), "df"))
-
-save(df, file ='data/df')
-save(entrez_summary, file ='data/entrez_summary')
-save(henipa.search, file ='data/henipa.search')
-
-save(df, file ='data/df')
 
 
 

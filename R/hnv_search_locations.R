@@ -22,9 +22,27 @@ for(i in 1:nrow(df))
       df$south[i] <- rd$south
       df$east[i]  <- rd$east
       df$west[i]  <- rd$west
+      df$lon[i]   <- rd$lon
+      df$lat[i]   <- rd$lat
     }
   }
 }
 
-save(df, file ='data/df')
+
+#this finds the diag of the square, .5*diag^2  = area of the square
+geodesic <- function(df)
+{
+  for(i in 1:nrow(df))
+  {
+    df[i,'area_of_uncertainty_km2'] <-  .5*(fields::rdist.earth(x1 =  as.matrix(df[i,c('north', 'west')]), x2 =  as.matrix(df[i,c('south', 'east')])))^2
+  }
+  return(df)
+}
+
+df <- geodesic(df)
+
+hist(df$area_of_uncertainty_km2, breaks =50)
+
+save(df, file ='data/df.Rdata')
+
 
