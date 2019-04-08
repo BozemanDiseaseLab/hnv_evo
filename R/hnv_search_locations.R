@@ -6,7 +6,8 @@
 
 library(RgoogleMaps)
 library(ggmap)
-key <- "AIzaSyD40FLStnvp085UB-FKXbyONuxV3ke4umY"
+key == ...look it up
+
 ggmap::register_google(key = key)
 
 i<-1
@@ -43,6 +44,8 @@ df <- geodesic(df)
 
 hist(df$area_of_uncertainty_km2, breaks =50)
 
-save(df, file ='data/df.Rdata')
+df$lat <- df$lat + rnorm(n = nrow(df), mean = 0, sd = .01)
+df$lon <- df$lon + rnorm(n = nrow(df), mean = 0, sd = .01)
 
+save(df, file ='data/df.Rdata')
 
